@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  langchainchroma:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: langchainchroma
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - .:/home/app
+    ports:
+      - "8501:8501"
+    restart: always
+    networks:
+      - flowise_net
+    command: ["./run.sh"]
+  
+networks:
+    flowise_net:
+        name: chroma_net
+        external: true

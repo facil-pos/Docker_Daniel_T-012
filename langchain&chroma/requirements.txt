@@ -1,0 +1,7 @@
+pypdf
+langchain==0.0.352
+openai
+tiktoken
+chromadb
+streamlit
+pysqlite3-binary
