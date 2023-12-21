@@ -9,6 +9,10 @@ Los sistemas de archivos en docker se basan en imagenes apilables, por ejemplo t
 ### Recuros
 
   * [Introduccion](./Introduccion/readme.md) 
+  * [Aprende Docker ahora! curso completo gratis desde cero! (youtube.com)](https://www.youtube.com/watch?v=4Dko5W96WHg)
+  * [Ejemplos](./Ejemplos/)
+  * [Introducción a los contenedores de Docker - Training | Microsoft Learn](https://learn.microsoft.com/es-es/training/modules/intro-to-docker-containers/)
+  * [Compilación de una aplicación web en contenedores con Docker - Training | Microsoft Learn](https://learn.microsoft.com/es-es/training/modules/intro-to-containers/)
 
 
 ## ¿Qué es un Dockerfile?
@@ -60,6 +64,10 @@ La configuración de red predeterminada de Docker hace que sea posible aislar lo
 
 La red en Docker es un componente crucial que define cómo los contenedores dentro de un mismo host Docker interactúan entre sí y con redes externas.
 
+## Recursos
+
+* [Aprende Docker ahora | conectandose a los contenedores](https://youtu.be/4Dko5W96WHg?t=2770&si=Q8LArChOHfbnkn4n)
+
 ### 1. Tipos de Redes en Docker
 
 Docker proporciona varios controladores de red:
@@ -71,10 +79,10 @@ Docker proporciona varios controladores de red:
 
 ### 2. Crear y Gestionar Redes
 
-Para crear una red, usas el comando `docker network create`. Por ejemplo, para crear una red tipo bridge:
+Para crear una red, usas el comando `docker network create`. Por ejemplo, para crear una red:
 
 ```bash
-docker network create --driver bridge mi_red_bridge
+docker network create bridge mi_red_bridge
 ```
 
 Para listar redes disponibles:
