@@ -1,34 +1,45 @@
 import streamlit as st
 import os
 from utils import *
-from langchain.embeddings import HuggingFaceEmbeddings 
-from langchain.chat_models import ChatOpenAI
-from langchain.chains.question_answering import load_qa_chain
+from langchainModel import LangchainModel
 
+
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
 
 st.set_page_config('preguntaDOC')
-st.header("Pregunta a tu PDF")
+st.header("Pregunta a tus documentos")
 
+LangchainModel.initialize_model()
 
 with st.sidebar:
     
-    archivos = load_name_files(FILE_LIST)
+    st.subheader("Carga tus documentos")
     files_uploaded = st.file_uploader(
         "Carga tu archivo",
         type="pdf",
         accept_multiple_files=True
         )
     
+    
+    input_url_video = st.text_input("URL del video", key="url")
+    
     if st.button('Procesar'):
-        for pdf in files_uploaded:
-            if pdf is not None and pdf.name not in archivos:
-                archivos.append(pdf.name)
-                text_to_chromadb(pdf)
-
-        archivos = save_name_files(FILE_LIST, archivos)
-
+        if files_uploaded:
+            for pdf in files_uploaded:
+                if pdf is not None and pdf.name not in archivos:
+                    text_to_chromadb(pdf)
+        elif input_url_video:
+            text_to_chromadb(input_url_video)
+            print('url', input_url_video)
+        else:
+            st.warning('No hay archivos cargados')
+        
+    print('archivos antes de eliminar', archivos)
     if len(archivos) > 0:
         st.write("Archivos cargados:")
         lista_documentos = st.empty()
@@ -36,23 +47,31 @@ with st.sidebar:
             for arch in archivos:
                 st.write(arch)
             if st.button('Borrar documentos'):
-                archivos = []
                 clean_files(FILE_LIST)
+                print('archivos', archivos)
                 lista_documentos.empty()
 
+# Initialize conversation history
+if 'history' not in st.session_state:
+    st.session_state['history'] = []
+
+if 'generated' not in st.session_state:
+    st.session_state['generated'] = ["Hello! Ask me anything about 🤗"]
+
+if 'past' not in st.session_state:
+    st.session_state['past'] = ["Hey! 👋"]
+    
+for i in range(len(st.session_state['generated'])):
+    message(st.session_state["past"][i], is_user=True, key=str(i) + '_user', avatar_style="thumbs")
+    message(st.session_state["generated"][i], key=str(i), avatar_style="fun-emoji")
+
+
 if archivos:
-    user_question = st.text_input("Pregunta:")
+    user_question = st.chat_input("Say something")
     if user_question:
-        os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
-        embeddings = OpenAIEmbeddings(api_key=os.environ["OPENAI_API_KEY"])
-        
-        vstore = Chroma(client=chroma_client,
-                        collection_name=INDEX_NAME,
-                        embedding_function=embeddings)
 
-        docs = vstore.similarity_search(user_question, 3)
-        llm = ChatOpenAI(model_name='gpt-3.5-turbo')
-        chain = load_qa_chain(llm, chain_type="stuff")
-        respuesta = chain.run(input_documents=docs, question=user_question)
-
-        st.write(respuesta)
+        display_msg(user_question, 'past')
+        respuesta = LangchainModel.query(user_question, st.session_state['history'])
+        print('respuesta', respuesta)
+        display_msg(respuesta, 'generated')
+        print('memoria chat', st.session_state['history'])

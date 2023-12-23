@@ -5,3 +5,6 @@ tiktoken
 chromadb
 streamlit
 pysqlite3-binary
+streamlit_chat
+pytube
+youtube-transcript-api
